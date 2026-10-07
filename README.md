@@ -68,45 +68,45 @@ Facebook · Instagram · X (Twitter) · LinkedIn · TikTok · YouTube
 | **Fonts** | Plus Jakarta Sans, JetBrains Mono |
 | **Version Control** | Git + GitHub |
 
----
-
 ## 📁 Project Structure
-Supr_Mnds/
-├── backend/
-│ ├── routes/
-│ │ ├── auth.js Login endpoint
-│ │ ├── users.js User CRUD
-│ │ ├── accounts.js Social account CRUD
-│ │ ├── platforms.js Platform metadata
-│ │ ├── campaigns.js Campaign CRUD
-│ │ ├── posts.js Post CRUD + approval request
-│ │ ├── targets.js Per-platform targets
-│ │ ├── analytics.js Engagement metrics
-│ │ ├── comments.js Comment management
-│ │ ├── approvals.js Approval decisions
-│ │ ├── media.js File uploads
-│ │ └── admin.js DB admin (read-only)
-│ ├── uploads/ User-uploaded media
-│ ├── db.js MySQL connection pool
-│ ├── server.js Express app entry
-│ ├── .env.example Environment template
-│ └── package.json
-│
-├── frontend/
-│ ├── login.html Split-screen cosmic login
-│ ├── index.html Main dashboard
-│ ├── style.css All styles + theming
-│ └── app.js Frontend logic
-│
-├── database/
-│ ├── schema.sql 14 table definitions
-│ ├── seed.sql Minimal seed
-│ └── seed_v2.sql Rich demo data
-│
-├── .gitignore
-└── README.md
 
----
+```
+Supr_Mnds/
+|
++-- backend/
+|   +-- routes/
+|   |   +-- auth.js             Login endpoint
+|   |   +-- users.js            User CRUD
+|   |   +-- accounts.js         Social account CRUD
+|   |   +-- platforms.js        Platform metadata
+|   |   +-- campaigns.js        Campaign CRUD
+|   |   +-- posts.js            Post CRUD + approval request
+|   |   +-- targets.js          Per-platform targets
+|   |   +-- analytics.js        Engagement metrics
+|   |   +-- comments.js         Comment management
+|   |   +-- approvals.js        Approval decisions
+|   |   +-- media.js            File uploads
+|   |   +-- admin.js            DB admin (read-only)
+|   +-- uploads/                User-uploaded media
+|   +-- db.js                   MySQL connection pool
+|   +-- server.js               Express app entry
+|   +-- .env.example            Environment template
+|   +-- package.json
+|
++-- frontend/
+|   +-- login.html              Split-screen cosmic login
+|   +-- index.html              Main dashboard
+|   +-- style.css               All styles + theming
+|   +-- app.js                  Frontend logic
+|
++-- database/
+|   +-- schema.sql              14 table definitions
+|   +-- seed.sql                Minimal seed
+|   +-- seed_v2.sql             Rich demo data
+|
++-- .gitignore
++-- README.md
+```
 
 ## 🗄 Database Schema
 
