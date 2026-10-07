@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login — Supr_Mnds</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='8' width='5' height='16' rx='2' fill='%23c4b5fd'/%3E%3Crect x='13' y='4' width='6' height='24' rx='2' fill='%23a855f7'/%3E%3Crect x='23' y='8' width='5' height='16' rx='2' fill='%23c4b5fd'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+<script>
+  (function() {
+    const saved = localStorage.getItem('cms_theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+  })();
+</script>
+</head>
+<body class="login-body">
+
+<button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+  <span id="theme-icon">🌙</span>
+</button>
+
+<div class="login-split">
+
+  <!-- ================= LEFT: COSMIC BRAND PANEL ================= -->
+  <aside class="login-hero">
+    <div class="galaxy-nebula"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star delay"></div>
+
+    <div class="hero-content">
+      <div class="hero-logo">
+        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <rect x="4"  y="8"  width="5" height="16" rx="2" fill="#c4b5fd"/>
+          <rect x="13" y="4"  width="6" height="24" rx="2" fill="#a855f7"/>
+          <rect x="23" y="8"  width="5" height="16" rx="2" fill="#c4b5fd"/>
+        </svg>
+      </div>
+
+      <h1 class="hero-title">Supr_<span>Mnds</span></h1>
+      <p class="hero-tagline">One workspace for every platform you publish to.</p>
+
+      <ul class="hero-features">
+        <li><span class="dot"></span> Manage 6 platforms from one dashboard</li>
+        <li><span class="dot"></span> Schedule, approve and publish content</li>
+        <li><span class="dot"></span> Track engagement across every account</li>
+      </ul>
+
+      <div class="hero-footer">
+        <div class="hero-stat">
+          <strong id="stat-platforms">—</strong>
+          <small>Platforms</small>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <strong id="stat-users">—</strong>
+          <small>Users</small>
+        </div>
+        <div class="hero-divider"></div>
+        <div class="hero-stat">
+          <strong id="stat-posts">—</strong>
+          <small>Posts</small>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= RIGHT: LOGIN FORM ================= -->
+  <section class="login-form-side">
+    <div class="login-form-wrap">
+
+      <div class="form-head">
+        <h2>Welcome back</h2>
+        <p>Sign in to continue to your workspace</p>
+      </div>
+
+      <form id="login-form">
+        <label>
+          Username or Email
+          <input type="text" id="username" placeholder="e.g. admin" required autofocus autocomplete="username" />
+        </label>
+
+        <label>
+          Password
+          <div class="pw-wrap">
+            <input type="password" id="password" placeholder="••••••••" required autocomplete="current-password" />
+            <button type="button" class="pw-toggle" onclick="togglePw()" aria-label="Show password">
+              <svg id="pw-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </label>
+
+        <div class="form-row">
+          <label class="remember">
+            <input type="checkbox" id="remember" />
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-login" id="login-btn">
+          <span class="btn-text">Sign In</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+
+      <div class="demo-users">
+        <p class="demo-title"><span>Quick demo login</span></p>
+        <p class="demo-hint">Password for all: <code>password123</code></p>
+        <div class="demo-grid">
+          <button type="button" onclick="fillLogin('admin')">
+            <span class="demo-role">👑</span> Admin
+          </button>
+          <button type="button" onclick="fillLogin('manager1')">
+            <span class="demo-role">📊</span> Manager
+          </button>
+          <button type="button" onclick="fillLogin('editor1')">
+            <span class="demo-role">✍️</span> Editor
+          </button>
+          <button type="button" onclick="fillLogin('viewer1')">
+            <span class="demo-role">👁</span> Viewer
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+const API = 'http://localhost:5000/api';
+const $ = (id) => document.getElementById(id);
+
+/* ---------- Theme ---------- */
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('cms_theme', theme);
+  const icon = $('theme-icon');
+  if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'light';
+  applyTheme(cur === 'dark' ? 'light' : 'dark');
+}
+applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+
+/* ---------- Load live stats from API ---------- */
+(async function loadStats() {
+  try {
+    const [platforms, users, posts] = await Promise.all([
+      fetch(`${API}/platforms`).then(r => r.ok ? r.json() : []),
+      fetch(`${API}/users`).then(r => r.ok ? r.json() : []),
+      fetch(`${API}/posts`).then(r => r.ok ? r.json() : [])
+    ]);
+
+    document.getElementById('stat-platforms').textContent = platforms.length || 0;
+    document.getElementById('stat-users').textContent     = users.length || 0;
+    document.getElementById('stat-posts').textContent     = posts.length || 0;
+  } catch (e) {
+    // Backend offline — fall back to dashes
+    console.warn('Could not load stats:', e.message);
+  }
+})();
+
+/* ---------- Toast ---------- */
+let toastTimer;
+function toast(msg, type = '') {
+  const el = $('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+/* ---------- Password eye toggle ---------- */
+function togglePw() {
+  const input = $('password');
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  $('pw-eye').style.opacity = isText ? '.6' : '1';
+}
+
+/* ---------- Fill demo creds ---------- */
+function fillLogin(u) {
+  $('username').value = u;
+  $('password').value = 'password123';
+  $('username').focus();
+}
+
+/* ---------- Login submit ---------- */
+$('login-form').onsubmit = async (e) => {
+  e.preventDefault();
+  const btn = $('login-btn');
+  const card = document.querySelector('.login-form-wrap');
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: $('username').value.trim(),
+        password: $('password').value
+      })
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+
+    sessionStorage.setItem('cms_user', JSON.stringify(data));
+    toast('Welcome back, ' + (data.full_name || data.username) + '!', 'success');
+    setTimeout(() => window.location.href = 'index.html', 500);
+  } catch (err) {
+    toast(err.message, 'error');
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 400);
+    btn.classList.remove('loading');
+    btn.disabled = false;
+  }
+};
+</script>
+</body>
+</html>

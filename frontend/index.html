@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+  // Runs before page renders — prevents flash of wrong theme
+  (function() {
+    const saved = localStorage.getItem('cms_theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+  })();
+</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Supr_Mnds</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='8' width='5' height='16' rx='2' fill='%23c4b5fd'/%3E%3Crect x='13' y='4' width='6' height='24' rx='2' fill='%23a855f7'/%3E%3Crect x='23' y='8' width='5' height='16' rx='2' fill='%23c4b5fd'/%3E%3C/svg%3E" />
+<script>
+  // Redirect to login if not signed in
+  const _u = sessionStorage.getItem('cms_user');
+  if (!_u) window.location.replace('login.html');
+</script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">
+  <span id="theme-icon">🌙</span>
+</button>
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
+        <rect x="4"  y="8"  width="5" height="16" rx="2" fill="#c4b5fd"/>
+        <rect x="13" y="4"  width="6" height="24" rx="2" fill="#a855f7"/>
+        <rect x="23" y="8"  width="5" height="16" rx="2" fill="#c4b5fd"/>
+      </svg>
+    </div>
+    <div>
+      <h1>Supr_Mnds</h1>
+      <p>Content Manager</p>
+    </div>
+  </div>
+    <nav>
+    <button data-tab="dashboard" class="active">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></span>
+      Dashboard
+    </button>
+    <button data-tab="posts">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>
+      Posts
+    </button>
+    <button data-tab="campaigns">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
+      Campaigns
+    </button>
+    <button data-tab="accounts">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+      Accounts
+    </button>
+    <button data-tab="users">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      Users
+    </button>
+    <button data-tab="admin">
+  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
+  Database
+    </button>
+    <button data-tab="analytics">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+      Analytics
+    </button>
+    <button data-tab="approvals">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
+      Approvals
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar" id="me-avatar">?</div>
+      <div>
+        <strong id="me-name">...</strong>
+        <small id="me-role">...</small>
+      </div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+</aside>
+
+<main class="content">
+
+  <!-- Dashboard -->
+  <section id="dashboard" class="tab active">
+    <header class="page-head">
+      <div>
+        <h2>Dashboard</h2>
+        <p class="muted">Overview of your scheduled content</p>
+      </div>
+    </header>
+
+    <div class="cards-row" id="stat-cards"></div>
+        <div class="dashboard-charts">
+      <div class="chart-panel">
+        <h3>Engagement by Platform</h3>
+        <p class="sub">Likes, comments and shares across connected accounts</p>
+        <canvas id="platformChart"></canvas>
+      </div>
+      <div class="chart-panel">
+        <h3>Posts by Platform</h3>
+        <p class="sub">Distribution of scheduled content</p>
+        <canvas id="distributionChart"></canvas>
+      </div>
+    </div>
+      <div class="panel">
+      <div class="panel-head">
+        <h3>Upcoming Scheduled Posts</h3>
+        <button class="btn-ghost" onclick="loadUpcoming()">Refresh</button>
+      </div>
+      <table id="upcoming-table">
+        <thead>
+          <tr><th>Title</th><th>Platform</th><th>Account</th><th>Scheduled At</th><th>Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Posts -->
+  <section id="posts" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Posts</h2>
+        <p class="muted">Create and manage content across platforms</p>
+      </div>
+      <button class="btn-primary" onclick="toggleForm()">+ New Post</button>
+    </header>
+
+        <form id="post-form" class="panel hidden">
+      <h3>Create New Post</h3>
+
+      <div class="grid-2">
+        <label>Author
+          <select id="user_id" required>
+            <option value="">Select author...</option>
+          </select>
+        </label>
+        <label>Campaign (optional)
+          <select id="campaign_id">
+            <option value="">No campaign</option>
+          </select>
+        </label>
+      </div>
+
+      <label>Title
+        <input type="text" id="title" placeholder="Post title" required />
+      </label>
+
+      <label>Content
+        <textarea id="content" placeholder="Write your master content here..." required></textarea>
+      </label>
+
+      <div class="grid-2">
+        <label>Post Type
+          <select id="post_type">
+            <option value="text">Text</option>
+            <option value="image">Image</option>
+            <option value="video">Video</option>
+            <option value="carousel">Carousel</option>
+            <option value="link">Link</option>
+            <option value="story">Story</option>
+          </select>
+        </label>
+        <label>Attach Media
+          <input type="file" id="media_file" accept="image/*,video/*,.pdf" />
+        </label>
+      </div>
+
+      <div class="sub-head">
+        <h4>Where to Publish</h4>
+        <button type="button" class="btn-ghost" id="add-target">+ Add Platform</button>
+      </div>
+      <div id="targets-container"></div>
+
+            <div class="form-actions">
+        <button type="button" class="btn-ghost" onclick="toggleForm()">Cancel</button>
+        <button type="submit" class="btn-primary">Save Post</button>
+      </div>
+    </form>
+
+      <div class="filter-bar" id="post-filters">
+      <button class="filter-chip active" data-status="all" data-label="All">All</button>
+      <button class="filter-chip" data-status="published" data-label="Published">Published</button>
+      <button class="filter-chip" data-status="scheduled" data-label="Scheduled">Scheduled</button>
+      <button class="filter-chip" data-status="approved" data-label="Approved">Approved</button>
+      <button class="filter-chip" data-status="pending" data-label="Pending">Pending</button>
+      <button class="filter-chip" data-status="draft" data-label="Draft">Draft</button>
+      <span class="filter-count" id="post-count"></span>
+    </div>
+
+    <div id="posts-list" class="posts-grid"></div>
+  </section>
+
+  <!-- Accounts -->
+  <section id="accounts" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Social Accounts</h2>
+        <p class="muted">Connected platform accounts</p>
+      </div>
+      <button class="btn-primary" onclick="toggleAccountForm()">+ New Account</button>
+    </header>
+
+    <form id="account-form" class="panel hidden">
+      <h3>Connect New Account</h3>
+
+      <div class="grid-2">
+        <label>Platform
+          <select id="a_platform" required>
+            <option value="">Select platform...</option>
+          </select>
+        </label>
+        <label>Owner
+          <select id="a_user" required>
+            <option value="">Select user...</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <label>Account Name
+          <input type="text" id="a_name" placeholder="e.g. Brand Twitter Page" required />
+        </label>
+        <label>Handle
+          <input type="text" id="a_handle" placeholder="e.g. @brandx" />
+        </label>
+      </div>
+
+      <label>Access Token (optional)
+        <input type="password" autocomplete="off" id="a_token" placeholder="Leave blank for demo" />
+      </label>
+
+      <div class="form-actions">
+        <button class="btn-primary" onclick="cancelPostForm(); toggleForm();">+ New Post</button>
+        <button type="submit" class="btn-primary">Save Account</button>
+      </div>
+    </form>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>All Accounts</h3>
+        <button class="btn-ghost" onclick="loadAccounts()">Refresh</button>
+      </div>
+      <table id="accounts-table">
+        <thead>
+          <tr><th>ID</th><th>Account</th><th>Handle</th><th>Platform</th><th>Owner</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Campaigns -->
+  <section id="campaigns" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Campaigns</h2>
+        <p class="muted">Group your posts under marketing campaigns</p>
+      </div>
+      <button class="btn-primary" id="new-campaign-btn" onclick="toggleCampaignForm()">+ New Campaign</button>
+    </header>
+
+    <form id="campaign-form" class="panel hidden">
+      <h3>Create New Campaign</h3>
+
+      <label>Campaign Name
+        <input type="text" id="c_name" placeholder="e.g. Diwali Sale 2026" required />
+      </label>
+
+      <label>Description
+        <textarea id="c_description" placeholder="What is this campaign about?"></textarea>
+      </label>
+
+      <div class="grid-2">
+        <label>Start Date
+          <input type="date" id="c_start" />
+        </label>
+        <label>End Date
+          <input type="date" id="c_end" />
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <label>Status
+          <select id="c_status">
+            <option value="draft">Draft</option>
+            <option value="active">Active</option>
+            <option value="paused">Paused</option>
+            <option value="completed">Completed</option>
+          </select>
+        </label>
+        <label>Created By
+          <select id="c_created_by">
+            <option value="">Select user...</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" onclick="toggleCampaignForm()">Cancel</button>
+        <button type="submit" class="btn-primary">Save Campaign</button>
+      </div>
+    </form>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>All Campaigns</h3>
+        <button class="btn-ghost" onclick="loadCampaigns()">Refresh</button>
+      </div>
+      <table id="campaigns-table">
+        <thead>
+          <tr>
+            <th>ID</th><th>Name</th><th>Status</th>
+            <th>Start</th><th>End</th><th>Created By</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+    <!-- Users -->
+  <section id="users" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Users</h2>
+        <p class="muted">Team members who create and manage content</p>
+      </div>
+      <button class="btn-primary" onclick="toggleUserForm()">+ New User</button>
+    </header>
+
+    <form id="user-form" class="panel hidden">
+      <h3 id="user-form-title">Create New User</h3>
+      <input type="hidden" id="u_id" />
+
+      <div class="grid-2">
+        <label>Username
+          <input type="text" id="u_username" placeholder="e.g. john_doe" required />
+        </label>
+        <label>Email
+          <input type="email" id="u_email" placeholder="e.g. john@cms.com" required />
+        </label>
+      </div>
+
+      <div class="grid-2">
+        <label>Full Name
+          <input type="text" id="u_fullname" placeholder="e.g. John Doe" />
+        </label>
+        <label>Role
+          <select id="u_role" required>
+            <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+            <option value="editor" selected>Editor</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </label>
+      </div>
+
+      <label>Password
+        <input type="password" id="u_password" placeholder="Leave blank to keep unchanged (edit mode)" autocomplete="new-password" />
+      </label>
+
+      <label class="checkbox-label">
+        <input type="checkbox" id="u_active" checked />
+        Active
+      </label>
+
+      <div class="form-actions">
+        <button type="button" class="btn-ghost" onclick="toggleUserForm()">Cancel</button>
+        <button type="submit" class="btn-primary">Save User</button>
+      </div>
+    </form>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>All Users</h3>
+        <button class="btn-ghost" onclick="loadUsers()">Refresh</button>
+      </div>
+      <table id="users-table">
+        <thead>
+          <tr><th>ID</th><th>Username</th><th>Full Name</th><th>Email</th><th>Role</th><th>Status</th><th>Actions</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+    <!-- Database Admin -->
+  <section id="admin" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Database Admin</h2>
+        <p class="muted">Browse tables and run read-only queries (admin only)</p>
+      </div>
+      <button class="btn-ghost" onclick="loadAdminTables()">Refresh</button>
+    </header>
+
+    <div class="db-grid">
+
+      <!-- Left: Table list -->
+      <div class="panel db-tables-panel">
+        <h3>Tables</h3>
+        <div id="db-table-list" class="db-table-list"></div>
+      </div>
+
+      <!-- Right: Query + Data view -->
+      <div class="db-main">
+
+        <div class="panel">
+          <h3>SQL Query Runner</h3>
+          <p class="muted" style="margin-bottom:.8rem;font-size:12px;">
+            Only SELECT / SHOW / DESCRIBE / EXPLAIN are allowed.
+          </p>
+          <textarea id="sql-input" class="sql-editor" placeholder="SELECT * FROM posts LIMIT 10;"></textarea>
+          <div class="form-actions" style="border:none;padding-top:10px;">
+            <button class="btn-ghost" onclick="clearSql()">Clear</button>
+            <button class="btn-primary" onclick="runSql()">▶ Run Query</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h3 id="db-view-title">Select a table or run a query</h3>
+            <span id="db-row-count" class="muted"></span>
+          </div>
+          <div id="db-results" class="db-results">
+            <div class="empty-state">
+              <div class="empty-icon">🗄</div>
+              <h4>No data yet</h4>
+              <p>Click a table on the left or run a query above.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Analytics -->
+  <section id="analytics" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Analytics</h2>
+        <p class="muted">Engagement performance across platforms</p>
+      </div>
+      <button class="btn-ghost" onclick="loadAnalytics()">Refresh</button>
+    </header>
+
+    <div class="panel">
+      <h3>Engagement by Platform</h3>
+      <table id="analytics-table">
+        <thead>
+          <tr><th>Platform</th><th>Likes</th><th>Comments</th><th>Shares</th><th>Avg Engagement</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="panel">
+      <h3>Top Posts</h3>
+      <table id="top-posts-table">
+        <thead><tr><th>Post</th><th>Total Engagement</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Approvals -->
+  <section id="approvals" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Approvals</h2>
+        <p class="muted">Review and approve pending posts</p>
+      </div>
+      <button class="btn-ghost" onclick="loadApprovals()">Refresh</button>
+    </header>
+    <div class="panel">
+      <table id="approvals-table">
+        <thead>
+          <tr><th>Post ID</th><th>Title</th><th>Requested By</th><th>Requested At</th><th>Action</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
