@@ -174,8 +174,12 @@ async function editPost(id) {
     // Store the editing ID on the form
     $('post-form').dataset.editId = id;
 
-    // Fill fields
-    $('user_id').value       = post.user_id || '';
+    // Fill fields (editors/viewers can only author as themselves)
+    if (CURRENT_ROLE === 'editor' || CURRENT_ROLE === 'viewer') {
+      $('user_id').value = CURRENT_USER_ID;
+    } else {
+      $('user_id').value = post.user_id || '';
+    }
     $('campaign_id').value   = post.campaign_id || '';
     $('title').value         = post.title || '';
     $('content').value       = post.content || '';
@@ -223,6 +227,12 @@ function toggleForm() {
     f.reset();
     f.dataset.editId = '';
     $('targets-container').innerHTML = '';
+
+    // Re-apply editor/viewer self-authoring after reset
+    if (CURRENT_ROLE === 'editor' || CURRENT_ROLE === 'viewer') {
+      $('user_id').innerHTML =
+        `<option value="${CURRENT_USER_ID}" selected>${esc(ME.full_name || ME.username)}</option>`;
+    }
 
     const formTitle = f.querySelector('h3');
     if (formTitle) formTitle.textContent = 'Create New Post';

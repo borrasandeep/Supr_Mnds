@@ -160,7 +160,7 @@ router.post('/:id/request-approval', async (req, res) => {
 
     // Check no pending approval already
     const [existing] = await db.query(
-      'SELECT approval_id FROM approvals WHERE post_id = ? AND status = "pending"',
+      "SELECT approval_id FROM approvals WHERE post_id = ? AND status = 'pending'",
       [req.params.id]
     );
     if (existing.length > 0) {
