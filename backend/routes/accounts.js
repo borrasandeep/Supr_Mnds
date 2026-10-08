@@ -4,7 +4,7 @@ const db = require('../db');
 router.get('/', async (req, res) => {
   try {
     const [rows] = await db.query(`
-      SELECT sa.account_id, sa.account_name, sa.account_handle,
+      SELECT sa.account_id, sa.platform_id, sa.account_name, sa.account_handle,
              sa.is_active, u.username, p.name AS platform
       FROM social_accounts sa
       JOIN users u     ON u.user_id     = sa.user_id
