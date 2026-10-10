@@ -41,12 +41,12 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- ============================================================
 
 INSERT INTO users (username, email, password_hash, full_name, role, is_active) VALUES
-('admin',     'admin@suprmnds.com',    '$2b$10$abcdefghijklmnopqrstuv', 'Aarav Mehta',     'admin',   TRUE),
-('priya.m',   'priya@suprmnds.com',    '$2b$10$abcdefghijklmnopqrstuv', 'Priya Sharma',    'manager', TRUE),
-('rahul.v',   'rahul@suprmnds.com',    '$2b$10$abcdefghijklmnopqrstuv', 'Rahul Verma',     'editor',  TRUE),
-('anita.r',   'anita@suprmnds.com',    '$2b$10$abcdefghijklmnopqrstuv', 'Anita Rao',       'editor',  TRUE),
-('karthik.s', 'karthik@suprmnds.com',  '$2b$10$abcdefghijklmnopqrstuv', 'Karthik Subbu',   'editor',  TRUE),
-('neha.g',    'neha@suprmnds.com',     '$2b$10$abcdefghijklmnopqrstuv', 'Neha Gupta',      'viewer',  TRUE);
+('admin',     'admin@suprmnds.com',    '$2b$10$m6EVVc0VbYeo4AsV.Ur9JO7l3YSuaHqhBNZjt1dccpSBymOZYFPKa', 'Aarav Mehta',     'admin',   TRUE),
+('priya.m',   'priya@suprmnds.com',    '$2b$10$TnCEAc/MisSjbBNyj1btQuxK1ImLIcczbERzFLtIBUsgw/7NzoZkm', 'Priya Sharma',    'manager', TRUE),
+('rahul.v',   'rahul@suprmnds.com',    '$2b$10$LIZghQb8uloKHRi/gVfGQOA88ZMMJ3SxJFQhpXIf4OXAJHi6w04Qu', 'Rahul Verma',     'editor',  TRUE),
+('anita.r',   'anita@suprmnds.com',    '$2b$10$uHKYUZmB57Y9HFuw8x.odu8sl1ylJvxkvU0U2I3QlNQ2h/QnJQxxi', 'Anita Rao',       'editor',  TRUE),
+('karthik.s', 'karthik@suprmnds.com',  '$2b$10$m6EVVc0VbYeo4AsV.Ur9JO7l3YSuaHqhBNZjt1dccpSBymOZYFPKa', 'Karthik Subbu',   'editor',  TRUE),
+('neha.g',    'neha@suprmnds.com',     '$2b$10$TnCEAc/MisSjbBNyj1btQuxK1ImLIcczbERzFLtIBUsgw/7NzoZkm', 'Neha Gupta',      'viewer',  TRUE);
 
 -- ============================================================
 -- 2. SOCIAL ACCOUNTS (8 accounts across 6 platforms)

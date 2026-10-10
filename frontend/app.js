@@ -31,6 +31,7 @@ const CURRENT_ROLE = ME ? ME.role : 'viewer';
 
 function logout() {
   sessionStorage.removeItem('cms_user');
+  sessionStorage.removeItem('cms_token');
   window.location.href = 'login.html';
 }
 window.logout = logout;
@@ -47,8 +48,22 @@ const fmtDate = (d) => {
   return isNaN(dt) ? esc(d) : dt.toLocaleString();
 };
 
-async function api(path, options) {
-  const res = await fetch(`${API}${path}`, options);
+async function api(path, options = {}) {
+  const token = sessionStorage.getItem('cms_token');
+  const headers = {
+    ...(options.headers || {}),
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+  };
+
+  const res = await fetch(`${API}${path}`, { ...options, headers });
+
+  if (res.status === 401 || res.status === 403) {
+    sessionStorage.removeItem('cms_user');
+    sessionStorage.removeItem('cms_token');
+    window.location.replace('login.html');
+    return;
+  }
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || `Request failed (${res.status})`);

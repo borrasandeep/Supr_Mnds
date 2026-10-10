@@ -11,10 +11,10 @@ INSERT INTO platforms (name, base_url, char_limit, supports_images, supports_vid
 
 -- Users (password = "password123" hashed with bcrypt just for demo)
 INSERT INTO users (username, email, password_hash, full_name, role) VALUES
-('admin',   'admin@cms.com',   '$2b$10$abcdefghijklmnopqrstuv', 'System Admin',  'admin'),
-('manager1','manager@cms.com', '$2b$10$abcdefghijklmnopqrstuv', 'Priya Sharma',  'manager'),
-('editor1', 'editor@cms.com',  '$2b$10$abcdefghijklmnopqrstuv', 'Rahul Verma',   'editor'),
-('viewer1', 'viewer@cms.com',  '$2b$10$abcdefghijklmnopqrstuv', 'Anita Rao',     'viewer');
+('admin',   'admin@cms.com',   '$2b$10$m6EVVc0VbYeo4AsV.Ur9JO7l3YSuaHqhBNZjt1dccpSBymOZYFPKa', 'System Admin',  'admin'),
+('manager1','manager@cms.com', '$2b$10$TnCEAc/MisSjbBNyj1btQuxK1ImLIcczbERzFLtIBUsgw/7NzoZkm', 'Priya Sharma',  'manager'),
+('editor1', 'editor@cms.com',  '$2b$10$LIZghQb8uloKHRi/gVfGQOA88ZMMJ3SxJFQhpXIf4OXAJHi6w04Qu', 'Rahul Verma',   'editor'),
+('viewer1', 'viewer@cms.com',  '$2b$10$uHKYUZmB57Y9HFuw8x.odu8sl1ylJvxkvU0U2I3QlNQ2h/QnJQxxi', 'Anita Rao',     'viewer');
 
 -- Social accounts
 INSERT INTO social_accounts (user_id, platform_id, account_name, account_handle) VALUES

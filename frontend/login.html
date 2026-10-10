@@ -110,24 +110,6 @@
         </button>
       </form>
 
-      <div class="demo-users">
-        <p class="demo-title"><span>Quick demo login</span></p>
-        <p class="demo-hint">Password for all: <code>password123</code></p>
-        <div class="demo-grid">
-          <button type="button" onclick="fillLogin('admin')">
-            <span class="demo-role">👑</span> Admin
-          </button>
-          <button type="button" onclick="fillLogin('manager1')">
-            <span class="demo-role">📊</span> Manager
-          </button>
-          <button type="button" onclick="fillLogin('editor1')">
-            <span class="demo-role">✍️</span> Editor
-          </button>
-          <button type="button" onclick="fillLogin('viewer1')">
-            <span class="demo-role">👁</span> Viewer
-          </button>
-        </div>
-      </div>
 
     </div>
   </section>
@@ -156,21 +138,14 @@ applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
 /* ---------- Load live stats from API ---------- */
 (async function loadStats() {
   try {
-    const [platforms, users, posts] = await Promise.all([
-      fetch(`${API}/platforms`).then(r => r.ok ? r.json() : []),
-      fetch(`${API}/users`).then(r => r.ok ? r.json() : []),
-      fetch(`${API}/posts`).then(r => r.ok ? r.json() : [])
-    ]);
-
-    document.getElementById('stat-platforms').textContent = platforms.length || 0;
-    document.getElementById('stat-users').textContent     = users.length || 0;
-    document.getElementById('stat-posts').textContent     = posts.length || 0;
+    const stats = await fetch(`${API}/stats`).then(r => r.ok ? r.json() : {});
+    document.getElementById('stat-platforms').textContent = stats.platforms ?? 0;
+    document.getElementById('stat-users').textContent     = stats.users ?? 0;
+    document.getElementById('stat-posts').textContent     = stats.posts ?? 0;
   } catch (e) {
-    // Backend offline — fall back to dashes
     console.warn('Could not load stats:', e.message);
   }
 })();
-
 /* ---------- Toast ---------- */
 let toastTimer;
 function toast(msg, type = '') {
@@ -219,6 +194,7 @@ $('login-form').onsubmit = async (e) => {
     if (!res.ok) throw new Error(data.error || 'Login failed');
 
     sessionStorage.setItem('cms_user', JSON.stringify(data));
+    sessionStorage.setItem('cms_token', data.token);
     toast('Welcome back, ' + (data.full_name || data.username) + '!', 'success');
     setTimeout(() => window.location.href = 'index.html', 500);
   } catch (err) {
