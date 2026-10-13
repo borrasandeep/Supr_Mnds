@@ -9,7 +9,16 @@ const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
-  dateStrings: true
+  dateStrings: true,
+  charset: 'utf8mb4',
+  timezone: 'local',
+  // Force utf8mb4 for all connections
+  typeCast: function (field, next) {
+    if (field.type === 'VAR_STRING' || field.type === 'STRING') {
+      return field.string('utf8');
+    }
+    return next();
+  }
 });
 
 module.exports = pool;

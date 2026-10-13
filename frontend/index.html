@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#7C6CFF" />
   <script>
   // Runs before page renders — prevents flash of wrong theme
   (function() {
@@ -47,6 +49,10 @@
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg></span>
       Posts
     </button>
+    <button data-tab="calendar">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+      Calendar
+    </button>
     <button data-tab="campaigns">
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
       Campaigns
@@ -60,8 +66,8 @@
       Users
     </button>
     <button data-tab="admin">
-  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
-  Database
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></span>
+      Database
     </button>
     <button data-tab="analytics">
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
@@ -74,7 +80,7 @@
   </nav>
   <div class="sidebar-footer">
     <div class="user-chip">
-      <div class="avatar" id="me-avatar">?</div>
+      <div class="avatar" id="me-avatar"></div>
       <div>
         <strong id="me-name">...</strong>
         <small id="me-role">...</small>
@@ -96,7 +102,16 @@
     </header>
 
     <div class="cards-row" id="stat-cards"></div>
-        <div class="dashboard-charts">
+    <div class="insights-grid">
+      <div class="panel" id="best-time-panel"></div>
+      <div class="panel" id="sentiment-panel"></div>
+    </div>
+
+    <div class="panel" id="activity-panel"></div>
+
+    <div class="panel needs-panel" id="needs-attention"></div>
+
+    <div class="dashboard-charts">
       <div class="chart-panel">
         <h3>Engagement by Platform</h3>
         <p class="sub">Likes, comments and shares across connected accounts</p>
@@ -122,6 +137,40 @@
     </div>
   </section>
 
+    <!-- Calendar -->
+  <section id="calendar" class="tab">
+    <header class="page-head">
+      <div>
+        <h2>Content Calendar</h2>
+        <p class="muted">Drag posts to reschedule · Click a day to create</p>
+      </div>
+      <div class="cal-controls">
+        <button class="btn-ghost" onclick="calPrev()">←</button>
+        <button class="btn-ghost" onclick="calToday()">Today</button>
+        <button class="btn-ghost" onclick="calNext()">→</button>
+      </div>
+    </header>
+
+    <div class="panel cal-panel">
+      <div class="cal-header">
+        <h3 id="cal-title">Loading...</h3>
+        <div class="cal-legend">
+          <span class="legend-item"><span class="legend-dot facebook"></span>Facebook</span>
+          <span class="legend-item"><span class="legend-dot instagram"></span>Instagram</span>
+          <span class="legend-item"><span class="legend-dot twitter"></span>X</span>
+          <span class="legend-item"><span class="legend-dot linkedin"></span>LinkedIn</span>
+          <span class="legend-item"><span class="legend-dot tiktok"></span>TikTok</span>
+          <span class="legend-item"><span class="legend-dot youtube"></span>YouTube</span>
+        </div>
+      </div>
+
+      <div class="cal-weekdays">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+  </section>
+
   <!-- Posts -->
   <section id="posts" class="tab">
     <header class="page-head">
@@ -129,7 +178,13 @@
         <h2>Posts</h2>
         <p class="muted">Create and manage content across platforms</p>
       </div>
-      <button class="btn-primary" onclick="toggleForm()">+ New Post</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" onclick="exportPostsCSV()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;display:inline-block;vertical-align:-2px;margin-right:4px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+        <button class="btn-primary" onclick="toggleForm()">+ New Post</button>
+      </div>
     </header>
 
         <form id="post-form" class="panel hidden">
@@ -178,21 +233,47 @@
       </div>
       <div id="targets-container"></div>
 
-            <div class="form-actions">
+            <div class="preview-section">
+        <div class="sub-head">
+          <h4>Live Preview</h4>
+          <span class="preview-hint">Auto-updates as you type</span>
+        </div>
+        <div id="post-preview" class="preview-grid">
+          <div class="preview-empty">
+            <p>Add platform targets to see how your post will look.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
         <button type="button" class="btn-ghost" onclick="toggleForm()">Cancel</button>
         <button type="submit" class="btn-primary">Save Post</button>
       </div>
     </form>
 
-      <div class="filter-bar" id="post-filters">
-      <button class="filter-chip active" data-status="all" data-label="All">All</button>
-      <button class="filter-chip" data-status="published" data-label="Published">Published</button>
-      <button class="filter-chip" data-status="scheduled" data-label="Scheduled">Scheduled</button>
-      <button class="filter-chip" data-status="approved" data-label="Approved">Approved</button>
-      <button class="filter-chip" data-status="pending" data-label="Pending">Pending</button>
-      <button class="filter-chip" data-status="draft" data-label="Draft">Draft</button>
-      <span class="filter-count" id="post-count"></span>
-    </div>
+            <div class="filter-bar" id="post-filters">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="post-search" placeholder="Search posts..." />
+        </div>
+
+        <select id="post-sort" class="sort-select">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="title">Title (A–Z)</option>
+          <option value="engagement">Most engagement</option>
+        </select>
+
+        <div class="filter-chips-scroll">
+          <button class="filter-chip active" data-status="all" data-label="All">All</button>
+          <button class="filter-chip" data-status="published" data-label="Published">Published</button>
+          <button class="filter-chip" data-status="scheduled" data-label="Scheduled">Scheduled</button>
+          <button class="filter-chip" data-status="approved" data-label="Approved">Approved</button>
+          <button class="filter-chip" data-status="pending" data-label="Pending">Pending</button>
+          <button class="filter-chip" data-status="draft" data-label="Draft">Draft</button>
+        </div>
+        <span class="filter-count" id="post-count"></span>
+      </div>
 
     <div id="posts-list" class="posts-grid"></div>
   </section>
@@ -204,7 +285,10 @@
         <h2>Social Accounts</h2>
         <p class="muted">Connected platform accounts</p>
       </div>
-      <button class="btn-primary" onclick="toggleAccountForm()">+ New Account</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" onclick="exportAccountsCSV()">Export CSV</button>
+        <button class="btn-primary" onclick="toggleAccountForm()">+ New Account</button>
+      </div>
     </header>
 
     <form id="account-form" class="panel hidden">
@@ -332,7 +416,10 @@
         <h2>Users</h2>
         <p class="muted">Team members who create and manage content</p>
       </div>
-      <button class="btn-primary" onclick="toggleUserForm()">+ New User</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost" onclick="exportUsersCSV()">Export CSV</button>
+        <button class="btn-primary" onclick="toggleUserForm()">+ New User</button>
+      </div>
     </header>
 
     <form id="user-form" class="panel hidden">
@@ -492,9 +579,32 @@
 
 </main>
 
-<div id="toast" class="toast"></div>
+<!-- Confirmation Modal -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-icon" id="modal-icon">⚠️</div>
+    <h3 id="modal-title">Confirm</h3>
+    <p id="modal-message">Are you sure?</p>
+    <div class="modal-actions">
+      <button class="btn-ghost" id="modal-cancel">Cancel</button>
+      <button class="btn-primary" id="modal-confirm">Confirm</button>
+    </div>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="app.js"></script>
+<div id="toast" class="toast"></div>
+<script>
+  // Unregister any existing service worker so files always load fresh
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      regs.forEach(r => r.unregister());
+    });
+    caches.keys().then(keys => {
+      keys.forEach(k => caches.delete(k));
+    });
+  }
+</script>
 </body>
 </html>

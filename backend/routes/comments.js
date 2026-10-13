@@ -26,4 +26,20 @@ router.post('/', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
+// GET /api/comments/sentiment
+router.get('/sentiment', async (req, res) => {
+  try {
+    const [rows] = await db.query(`
+      SELECT sentiment, COUNT(*) AS count
+      FROM comments
+      GROUP BY sentiment
+    `);
+    const summary = { positive: 0, neutral: 0, negative: 0 };
+    rows.forEach(r => { if (summary[r.sentiment] !== undefined) summary[r.sentiment] = +r.count; });
+    res.json(summary);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
 module.exports = router;

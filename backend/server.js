@@ -1,63 +1,64 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
-
-const { authenticateToken, requireRole } = require('./middleware/auth');
 
 const app = express();
 
-// Restrict CORS to your frontend origins only
-const allowedOrigins = [
-  'http://localhost:5000',
-  'http://127.0.0.1:5000',
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-  'http://localhost:5500',
-  'http://127.0.0.1:5500'
-];
-
+/* ---------- Middleware ---------- */
+// CORS — allow any origin during development
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    cb(new Error('Not allowed by CORS'));
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: true,
   credentials: true
 }));
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// ----- PUBLIC ROUTE (login only) -----
-app.use('/api/auth', require('./routes/auth'));
+/* ---------- Static uploads ---------- */
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ----- PROTECTED ROUTES -----
-app.use('/api/platforms', authenticateToken, require('./routes/platforms'));
-app.use('/api/users',     authenticateToken, requireRole('admin'), require('./routes/users'));
-app.use('/api/accounts',  authenticateToken, require('./routes/accounts'));
-app.use('/api/campaigns', authenticateToken, require('./routes/campaigns'));
-app.use('/api/posts',     authenticateToken, require('./routes/posts'));
-app.use('/api/targets',   authenticateToken, require('./routes/targets'));
-app.use('/api/analytics', authenticateToken, require('./routes/analytics'));
-app.use('/api/comments',  authenticateToken, require('./routes/comments'));
-app.use('/api/approvals', authenticateToken, requireRole('admin', 'manager'), require('./routes/approvals'));
-app.use('/api/admin',     authenticateToken, requireRole('admin'), require('./routes/admin'));
-app.use('/api/media',     authenticateToken, require('./routes/media'));
+/* ---------- API Routes ---------- */
+app.use('/api/auth',      require('./routes/auth'));
+app.use('/api/platforms', require('./routes/platforms'));
+app.use('/api/users',     require('./routes/users'));
+app.use('/api/accounts',  require('./routes/accounts'));
+app.use('/api/campaigns', require('./routes/campaigns'));
+app.use('/api/posts',     require('./routes/posts'));
+app.use('/api/targets',   require('./routes/targets'));
+app.use('/api/analytics', require('./routes/analytics'));
+app.use('/api/comments',  require('./routes/comments'));
+app.use('/api/approvals', require('./routes/approvals'));
+app.use('/api/media',     require('./routes/media'));
+app.use('/api/admin',     require('./routes/admin'));
 
-app.use('/uploads', express.static('uploads'));
-
-// PUBLIC ROUTE: for the login page stats
-app.get('/api/stats', async (req, res) => {
-  try {
-    const db = require('./db');
-    const [[p]] = await db.query('SELECT COUNT(*) AS c FROM platforms');
-    const [[u]] = await db.query('SELECT COUNT(*) AS c FROM users');
-    const [[po]] = await db.query('SELECT COUNT(*) AS c FROM posts');
-    res.json({ platforms: p.c, users: u.c, posts: po.c });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
+/* ---------- Root health check ---------- */
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Supr_Mnds API is running',
+    timestamp: new Date().toISOString()
+  });
 });
 
-app.get('/', (req, res) => res.json({ message: 'Social Media CMS API is running' }));
+/* ---------- 404 handler ---------- */
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
 
+/* ---------- Error handler (multer, JSON parse, etc.) ---------- */
+app.use((err, req, res, next) => {
+  if (err instanceof require('multer').MulterError) {
+    return res.status(400).json({ error: err.message });
+  }
+  if (err) {
+    console.error('Server error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+  next();
+});
+
+/* ---------- Start server ---------- */
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
