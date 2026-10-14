@@ -2,14 +2,16 @@ const BASE = 'http://localhost:5000';
 const API = `${BASE}/api`;
 
 /* ---------- GSAP safety shim ---------- */
-window.gsap = window.gsap || {
+window.gsap = window.gsap ||
+{
   to: (target, opts) => { if (opts?.onUpdate) opts.onUpdate(); },
   fromTo: () => {},
   killTweensOf: () => {}
 };
 
 /* ---------- Theme ---------- */
-function applyTheme(theme) {
+function applyTheme(theme) 
+{
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('cms_theme', theme);
   const icon = document.getElementById('theme-icon');
@@ -19,7 +21,8 @@ function applyTheme(theme) {
   }
 }
 
-function toggleTheme() {
+function toggleTheme()
+{
   const current = document.documentElement.getAttribute('data-theme') || 'light';
   applyTheme(current === 'dark' ? 'light' : 'dark');
 }
@@ -35,7 +38,8 @@ if (!ME) window.location.replace('login.html');
 const CURRENT_USER_ID = ME ? ME.user_id : null;
 const CURRENT_ROLE = ME ? ME.role : 'viewer';
 
-function logout() {
+function logout()
+{
   sessionStorage.removeItem('cms_user');
   sessionStorage.removeItem('cms_token');
   window.location.href = 'login.html';
@@ -53,12 +57,14 @@ const SUPR_LOGO_SVG = `
   </svg>`;
 
 // Returns the avatar HTML — always uses the Supr_Mnds logo
-function avatarHtml() {
+function avatarHtml()
+{
   return `<div class="brand-avatar">${SUPR_LOGO_SVG}</div>`;
 }
 
 /* ---------- Line icon library ---------- */
-const ICON = {
+const ICON = 
+{
   clock:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
   clockAlert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
   message:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
@@ -84,12 +90,14 @@ const ICON = {
   search:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
 };
 
-function icon(name, size = 16) {
+function icon(name, size = 16)
+{
   const svg = ICON[name] || ICON.sparkle;
   return `<span class="line-icon" style="width:${size}px;height:${size}px;">${svg}</span>`;
 }
 
-function icon(name, size = 16) {
+function icon(name, size = 16)
+{
   const svg = ICON[name] || ICON.sparkle;
   return `<span class="line-icon" style="width:${size}px;height:${size}px;">${svg}</span>`;
 }
@@ -97,13 +105,15 @@ function icon(name, size = 16) {
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-const fmtDate = (d) => {
+const fmtDate = (d) =>
+{
   if (!d) return '-';
   const dt = new Date(d);
   return isNaN(dt) ? esc(d) : dt.toLocaleString();
 };
 
-const relTime = (d) => {
+const relTime = (d) =>
+{
   if (!d) return '-';
   const dt = new Date(d);
   if (isNaN(dt)) return esc(d);
@@ -132,15 +142,18 @@ const relTime = (d) => {
 };
 
 // Wrap in a span with a title (tooltip) showing the exact date
-const relTimeWithTooltip = (d) => {
+const relTimeWithTooltip = (d) =>
+{
   if (!d) return '-';
   const dt = new Date(d);
   if (isNaN(dt)) return esc(d);
   return `<span title="${esc(dt.toLocaleString())}">${relTime(d)}</span>`;
 };
 
-function exportCSV(filename, rows, columns) {
-  if (!rows || rows.length === 0) {
+function exportCSV(filename, rows, columns)
+{
+  if (!rows || rows.length === 0) 
+  {
     toast('Nothing to export', 'error');
     return;
   }
@@ -149,7 +162,7 @@ function exportCSV(filename, rows, columns) {
     if (val === null || val === undefined) return '';
     const s = String(val).replace(/"/g, '""');
     return /[",\n]/.test(s) ? `"${s}"` : s;
-  };
+};
 
   const header = columns.map(c => escapeCell(c.label)).join(',');
   const body = rows.map(row =>
@@ -172,23 +185,27 @@ function exportCSV(filename, rows, columns) {
 
 window.exportCSV = exportCSV;
 
-async function api(path, options = {}) {
+async function api(path, options = {})
+{
   const token = sessionStorage.getItem('cms_token');
-  const headers = {
+  const headers = 
+  {
     ...(options.headers || {}),
     ...(token ? { 'Authorization': `Bearer ${token}` } : {})
   };
 
   const res = await fetch(`${API}${path}`, { ...options, headers });
 
-  if (res.status === 401 || res.status === 403) {
+  if (res.status === 401 || res.status === 403)
+  {
     sessionStorage.removeItem('cms_user');
     sessionStorage.removeItem('cms_token');
     window.location.replace('login.html');
     return;
   }
 
-  if (!res.ok) {
+  if (!res.ok)
+  {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.error || `Request failed (${res.status})`);
   }
@@ -202,9 +219,13 @@ const jsonPost = (path, body) => api(path, {
 });
 
 let toastTimer;
-function toast(msg, type = '') {
+function toast(msg, type = '') 
+{
   const el = $('toast');
-  if (!el) { console.warn('Toast:', msg); return; }
+  if (!el) 
+  {
+    console.warn('Toast-', msg); return;
+  }
 
   el.textContent = msg;
   el.className = 'toast ' + type + ' show';
@@ -216,8 +237,9 @@ function toast(msg, type = '') {
   );
 
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    gsap.to(el, {
+  toastTimer = setTimeout(() =>
+    {
+      gsap.to(el, {
       x: 50,
       opacity: 0,
       duration: 0.28,
@@ -227,7 +249,8 @@ function toast(msg, type = '') {
   }, 2500);
 }
 
-async function safe(fn) {
+async function safe(fn)
+{
   try { return await fn(); }
   catch (e) { toast(e.message || 'Something went wrong', 'error'); }
 }
@@ -243,7 +266,8 @@ let currentPostSearch = '';
 let currentPostSort = 'newest';
 let cachedPosts = [];
 
-async function populateDropdowns() {
+async function populateDropdowns() 
+{
   const [users, campaigns, accounts] = await Promise.all([
     api('/users').catch(() => []),
     api('/campaigns').catch(() => []),
@@ -253,10 +277,13 @@ async function populateDropdowns() {
   // ---------- Author dropdown ----------
   const authorLabel = $('user_id').closest('label');
 
-  if (CURRENT_ROLE === 'editor' || CURRENT_ROLE === 'viewer') {
+  if (CURRENT_ROLE === 'editor' || CURRENT_ROLE === 'viewer') 
+  {
     authorLabel.style.display = 'none';
     $('user_id').innerHTML = `<option value="${CURRENT_USER_ID}" selected>${esc(ME.full_name || ME.username)}</option>`;
-  } else {
+  } 
+  else 
+  {
     authorLabel.style.display = '';
     $('user_id').innerHTML = '<option value="">Select author...</option>' +
       users.map(u => `<option value="${u.user_id}">${esc(u.full_name || u.username)} (${esc(u.role)})</option>`).join('');
@@ -271,14 +298,16 @@ async function populateDropdowns() {
 }
 
 /* ---------- Role-based access ---------- */
-const ROLE_TABS = {
+const ROLE_TABS = 
+{
   admin:   ['dashboard','posts','calendar','accounts','campaigns','users','admin','analytics','approvals'],
   manager: ['dashboard','posts','calendar','accounts','campaigns','analytics','approvals'],
   editor:  ['dashboard','posts','calendar','campaigns','analytics'],
   viewer:  ['dashboard','analytics']
 };
 
-function applyRolePermissions() {
+function applyRolePermissions() 
+{
   // Fill sidebar user chip
     $('me-avatar').innerHTML = SUPR_LOGO_SVG;
   $('me-name').textContent = ME.full_name || ME.username;
@@ -300,7 +329,8 @@ function applyRolePermissions() {
   if (newPostBtn) newPostBtn.style.display = CURRENT_ROLE === 'viewer' ? 'none' : '';
 }
 /* ---------- Tab switching ---------- */
-document.querySelectorAll('nav button').forEach(btn => {
+document.querySelectorAll('nav button').forEach(btn => 
+  {
   btn.onclick = () => {
     document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -311,7 +341,8 @@ document.querySelectorAll('nav button').forEach(btn => {
 });
 
 /* ---------- Edit post ---------- */
-async function editPost(id) {
+async function editPost(id) 
+{
   await safe(async () => {
     // Find post in cache — if not there, fetch from API
     let post = cachedPosts.find(p => p.post_id === id);
