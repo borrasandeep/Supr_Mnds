@@ -3,18 +3,95 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Login — Supr_Mnds</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='8' width='5' height='16' rx='2' fill='%23c4b5fd'/%3E%3Crect x='13' y='4' width='6' height='24' rx='2' fill='%23a855f7'/%3E%3Crect x='23' y='8' width='5' height='16' rx='2' fill='%23c4b5fd'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script>
   (function() {
     const saved = localStorage.getItem('cms_theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
   })();
+
+/* ---------- Login page scroll animations ---------- */
+window.addEventListener('load', () => {
+  if (typeof gsap === 'undefined') return;
+
+  // Letter reveal on hero title
+  const letters = document.querySelectorAll('.hero-title .letter');
+  if (letters.length) {
+    gsap.fromTo(letters,
+      { y: 20, opacity: 0, rotateX: -60 },
+      {
+        y: 0, opacity: 1, rotateX: 0,
+        duration: 0.7,
+        stagger: 0.06,
+        ease: 'back.out(1.8)',
+        delay: 0.2
+      }
+    );
+  }
+
+  // Hero features stagger
+  const features = document.querySelectorAll('.hero-features li');
+  if (features.length) {
+    gsap.fromTo(features,
+      { x: -20, opacity: 0 },
+      {
+        x: 0, opacity: 1,
+        duration: 0.5,
+        stagger: 0.12,
+        ease: 'power2.out',
+        delay: 0.6
+      }
+    );
+  }
+
+  // Hero stats pop in
+  const stats = document.querySelectorAll('.hero-stat');
+  if (stats.length) {
+    gsap.fromTo(stats,
+      { scale: 0.7, opacity: 0 },
+      {
+        scale: 1, opacity: 1,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'back.out(1.6)',
+        delay: 1
+      }
+    );
+  }
+
+  // Platform showcase circles — springy pop
+  const circles = document.querySelectorAll('.platform-circle');
+  if (circles.length) {
+    gsap.fromTo(circles,
+      { scale: 0, rotate: -20, opacity: 0 },
+      {
+        scale: 1, rotate: 0, opacity: 1,
+        duration: 0.5,
+        stagger: 0.07,
+        ease: 'back.out(2)',
+        delay: 0.8
+      }
+    );
+  }
+
+  // Login form fades in from the right
+  const formWrap = document.querySelector('.login-form-wrap');
+  if (formWrap) {
+    gsap.fromTo(formWrap,
+      { x: 30, opacity: 0 },
+      { x: 0, opacity: 1, duration: 0.7, ease: 'power3.out', delay: 0.1 }
+    );
+  }
+});
+
+
 </script>
 </head>
 <body class="login-body">
@@ -40,7 +117,9 @@
         </svg>
       </div>
 
-      <h1 class="hero-title">Supr_<span>Mnds</span></h1>
+      <h1 class="hero-title">
+        <span class="letter">S</span><span class="letter">u</span><span class="letter">p</span><span class="letter">r</span><span class="letter">_</span><span class="letter accent">M</span><span class="letter accent">n</span><span class="letter accent">d</span><span class="letter accent">s</span>
+      </h1>
       <p class="hero-tagline">Built by a student who got tired of juggling six social apps.</p>
 
       <ul class="hero-features">

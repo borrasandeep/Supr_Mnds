@@ -4093,3 +4093,26 @@ body {
 .platform-showcase a:visited {
   color: #fff;
 }
+/* ---------- GSAP-friendly transitions ---------- */
+.stat-card,
+.post-card,
+.panel,
+.chart-panel {
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+/* ============================================================
+   LETTER REVEAL — used by GSAP
+   ============================================================ */
+.brand-title .letter,
+.hero-title .letter {
+  display: inline-block;
+  will-change: transform, opacity;
+}
+
+.hero-title .letter.accent {
+  background: linear-gradient(135deg, #c4b5fd 0%, #a855f7 50%, #d946ef 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

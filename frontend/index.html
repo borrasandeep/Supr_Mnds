@@ -36,7 +36,9 @@
       </svg>
     </div>
     <div>
-      <h1>Supr_Mnds</h1>
+      <h1 class="brand-title" aria-label="Supr_Mnds">
+        <span class="letter">S</span><span class="letter">u</span><span class="letter">p</span><span class="letter">r</span><span class="letter">_</span><span class="letter accent">M</span><span class="letter accent">n</span><span class="letter accent">d</span><span class="letter accent">s</span>
+      </h1>
       <p>Content Manager</p>
     </div>
   </div>
@@ -103,13 +105,13 @@
 
     <div class="cards-row" id="stat-cards"></div>
     <div class="insights-grid">
-      <div class="panel" id="best-time-panel"></div>
-      <div class="panel" id="sentiment-panel"></div>
-    </div>
+  <div class="panel" id="best-time-panel"></div>
+  <div class="panel" id="sentiment-panel"></div>
+</div>
 
-    <div class="panel" id="activity-panel"></div>
+<div class="panel" id="activity-panel"></div>
 
-    <div class="panel needs-panel" id="needs-attention"></div>
+<div class="panel needs-panel" id="needs-attention"></div>
 
     <div class="dashboard-charts">
       <div class="chart-panel">
@@ -593,6 +595,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 <script src="app.js"></script>
 <div id="toast" class="toast"></div>
 <script>

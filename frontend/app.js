@@ -1,13 +1,19 @@
 const BASE = 'http://localhost:5000';
 const API = `${BASE}/api`;
 
+/* ---------- GSAP safety shim ---------- */
+window.gsap = window.gsap || {
+  to: (target, opts) => { if (opts?.onUpdate) opts.onUpdate(); },
+  fromTo: () => {},
+  killTweensOf: () => {}
+};
+
 /* ---------- Theme ---------- */
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
   localStorage.setItem('cms_theme', theme);
   const icon = document.getElementById('theme-icon');
   if (icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
-    // Re-render charts with theme-aware colors
   if (typeof loadUpcoming === 'function' && document.querySelector('#platformChart')) {
     setTimeout(() => loadUpcoming(), 60);
   }
@@ -38,7 +44,6 @@ window.logout = logout;
 
 /* ---------- Helpers ---------- */
 const $ = (id) => document.getElementById(id);
-
 // Supr_Mnds brand logo (SVG data URL) — used in preview avatars
 const SUPR_LOGO_SVG = `
   <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none" style="width:100%;height:100%;display:block;">
@@ -52,14 +57,13 @@ function avatarHtml() {
   return `<div class="brand-avatar">${SUPR_LOGO_SVG}</div>`;
 }
 
-/* ---------- Line icon library (matches sidebar style) ---------- */
+/* ---------- Line icon library ---------- */
 const ICON = {
   clock:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
   clockAlert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>`,
   message:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,
   activity:   `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`,
-  rocket:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>`,
-  check:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`,
+  rocket:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>`,
   checkCircle:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
   xCircle:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
   alert:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`,
@@ -79,6 +83,11 @@ const ICON = {
   inbox:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>`,
   search:     `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,
 };
+
+function icon(name, size = 16) {
+  const svg = ICON[name] || ICON.sparkle;
+  return `<span class="line-icon" style="width:${size}px;height:${size}px;">${svg}</span>`;
+}
 
 function icon(name, size = 16) {
   const svg = ICON[name] || ICON.sparkle;
@@ -195,14 +204,27 @@ const jsonPost = (path, body) => api(path, {
 let toastTimer;
 function toast(msg, type = '') {
   const el = $('toast');
-  if (!el) {
-    console.warn('Toast:', msg);
-    return;
-  }
+  if (!el) { console.warn('Toast:', msg); return; }
+
   el.textContent = msg;
-  el.className = 'toast show ' + type;
+  el.className = 'toast ' + type + ' show';
+
+  gsap.killTweensOf(el);
+  gsap.fromTo(el,
+    { x: 50, opacity: 0 },
+    { x: 0, opacity: 1, duration: 0.35, ease: 'back.out(1.6)' }
+  );
+
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+  toastTimer = setTimeout(() => {
+    gsap.to(el, {
+      x: 50,
+      opacity: 0,
+      duration: 0.28,
+      ease: 'power2.in',
+      onComplete: () => el.classList.remove('show')
+    });
+  }, 2500);
 }
 
 async function safe(fn) {
@@ -382,14 +404,36 @@ window.editPost = editPost;
 /* ---------- New post form ---------- */
 function toggleForm() {
   const f = $('post-form');
+  if (!f) { toast('Form not found', 'error'); return; }
 
   if (f.classList.contains('hidden')) {
-    // Opening: reset to CREATE mode
+    // Make sure dropdowns are loaded before opening
+    if (!accountsCache || accountsCache.length === 0) {
+      safe(async () => {
+        await populateDropdowns();
+        f.reset();
+        f.dataset.editId = '';
+        $('targets-container').innerHTML = '';
+        if (CURRENT_ROLE === 'editor' || CURRENT_ROLE === 'viewer') {
+          $('user_id').innerHTML =
+            `<option value="${CURRENT_USER_ID}" selected>${esc(ME.full_name || ME.username)}</option>`;
+        }
+        const formTitle = f.querySelector('h3');
+        if (formTitle) formTitle.textContent = 'Create New Post';
+        const submitBtn = f.querySelector('button[type="submit"]');
+        if (submitBtn) submitBtn.textContent = 'Save Post';
+        addTargetRow();
+        f.classList.remove('hidden');
+        f.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      return;
+    }
+
+    // Normal open
     f.reset();
     f.dataset.editId = '';
     $('targets-container').innerHTML = '';
 
-    // Re-apply editor/viewer self-authoring after reset
     if (CURRENT_ROLE === 'editor' || CURRENT_ROLE === 'viewer') {
       $('user_id').innerHTML =
         `<option value="${CURRENT_USER_ID}" selected>${esc(ME.full_name || ME.username)}</option>`;
@@ -403,12 +447,13 @@ function toggleForm() {
 
     addTargetRow();
     f.classList.remove('hidden');
+    f.scrollIntoView({ behavior: 'smooth', block: 'start' });
   } else {
-    // Closing
     f.classList.add('hidden');
   }
 }
 window.toggleForm = toggleForm;
+
 $('add-target').onclick = () => addTargetRow();
 
 function addTargetRow() {
@@ -582,17 +627,23 @@ async function loadUpcoming() {
     </div>`;
 
   // Count-up animation
+    // Count-up animation (GSAP)
   document.querySelectorAll('.stat-card .value').forEach(el => {
     const target = +el.dataset.count;
-    const duration = 600;
-    const start = performance.now();
-    const step = (now) => {
-      const t = Math.min((now - start) / duration, 1);
-      el.textContent = Math.round(target * (1 - Math.pow(1 - t, 3)));
-      if (t < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
+    const obj = { val: 0 };
+    gsap.to(obj, {
+      val: target,
+      duration: 1.1,
+      ease: 'power3.out',
+      onUpdate: () => { el.textContent = Math.round(obj.val); }
+    });
   });
+
+  // Stagger the stat cards themselves on first paint
+  gsap.fromTo('.stat-card',
+    { opacity: 0, y: 14 },
+    { opacity: 1, y: 0, duration: 0.45, stagger: 0.06, ease: 'power2.out', clearProps: 'transform,opacity' }
+  );
 
   /* ---------- Needs Attention panel ---------- */
   renderNeedsAttention(needs);
@@ -932,10 +983,37 @@ function renderPosts() {
         <p>Try a different filter or create a new post.</p>
       </div>`;
 
-  // Update count text
+    // Update count text
   const label = currentPostFilter === 'all' ? 'posts' : `${currentPostFilter} posts`;
   $('post-count').textContent = `${posts.length} ${label}`;
+
+  // GSAP cascade — cards fade in one by one
+  const cards = document.querySelectorAll('#posts-list .post-card');
+  if (cards.length) {
+    gsap.killTweensOf(cards);
+    gsap.fromTo(cards,
+      { opacity: 0, y: 14 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.35,
+        stagger: 0.04,
+        ease: 'power2.out',
+        clearProps: 'transform,opacity'
+      }
+    );
+  }
+  if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
 }
+  
+    // GSAP cascade
+  if (typeof gsap !== 'undefined') {
+    gsap.fromTo('#posts-list .post-card',
+      { opacity: 0, y: 16, scale: 0.98 },
+      { opacity: 1, y: 0, scale: 1, duration: 0.35, stagger: 0.04, ease: 'power2.out', clearProps: 'transform,opacity' }
+    );
+  }
+
 
 function renderPostChips() {
   const counts = {
@@ -995,6 +1073,7 @@ async function loadAccounts() {
               : '<span class="muted">—</span>'}</td>
       </tr>`).join('')
     : emptyRow(7, 'No accounts yet');
+    if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
 }
 
 /* ---------- Campaigns ---------- */
@@ -1036,7 +1115,9 @@ async function loadUsers() {
           : '<span class="muted">—</span>'}</td>
       </tr>`).join('')
     : emptyRow(7, 'No users yet');
-}
+       if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
+  }
+  
 
 /* ---------- Analytics ---------- */
 async function loadAnalytics() {
@@ -1062,7 +1143,9 @@ async function loadAnalytics() {
         <td><strong>${+x.total_engagement || 0}</strong></td>
       </tr>`).join('')
     : emptyRow(2, 'No posts ranked yet');
+    if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
 }
+  
 
 /* ---------- Approvals ---------- */
 async function loadApprovals() {
@@ -1080,7 +1163,9 @@ async function loadApprovals() {
           : '<span class="muted">—</span>'}</td>
       </tr>`).join('')
     : emptyRow(5, 'No pending approvals 🎉');
+    if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
 }
+  
 
 /* ---------- Actions ---------- */
 async function decide(id, status) {
@@ -1092,8 +1177,9 @@ async function decide(id, status) {
     await loadApprovals();
     await loadPosts();
   });
+  if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
 }
-
+  
 async function deletePost(id) {
   await safe(async () => {
     const ok = await showModal({
@@ -1534,7 +1620,9 @@ function renderCalendar(gridStart, gridEnd) {
   }
 
   $('cal-grid').innerHTML = cells.join('');
+  if (typeof refreshScrollTriggers === 'function') refreshScrollTriggers();
 }
+  
 
 function calPrev()  { calCurrent.setMonth(calCurrent.getMonth() - 1); loadCalendar(); }
 function calNext()  { calCurrent.setMonth(calCurrent.getMonth() + 1); loadCalendar(); }
@@ -1955,13 +2043,39 @@ function showModal({ title, message, icon = '⚠️', confirmText = 'Confirm', c
 
     overlay.classList.remove('hidden');
 
+        // GSAP entrance
+    gsap.killTweensOf([overlay, '.modal-box']);
+    gsap.fromTo(overlay,
+      { opacity: 0 },
+      { opacity: 1, duration: 0.2, ease: 'power2.out' }
+    );
+    gsap.fromTo('.modal-box',
+      { scale: 0.9, opacity: 0, y: 14 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.35, ease: 'back.out(1.4)' }
+    );
+
+        // GSAP entrance
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: 'power2.out' });
+    gsap.fromTo('.modal-box',
+      { scale: 0.9, opacity: 0, y: 12 },
+      { scale: 1, opacity: 1, y: 0, duration: 0.35, ease: 'back.out(1.4)' }
+    );
+
     const finish = (val) => {
-      overlay.classList.add('hidden');
-      confirmBtn.onclick = null;
-      cancelBtn.onclick = null;
-      overlay.onclick = null;
-      document.removeEventListener('keydown', onKey);
-      resolve(val);
+      gsap.to('.modal-box', {
+        scale: 0.95, opacity: 0, y: 8, duration: 0.2, ease: 'power2.in'
+      });
+      gsap.to(overlay, {
+        opacity: 0, duration: 0.22, ease: 'power2.in',
+        onComplete: () => {
+          overlay.classList.add('hidden');
+          confirmBtn.onclick = null;
+          cancelBtn.onclick = null;
+          overlay.onclick = null;
+          document.removeEventListener('keydown', onKey);
+          resolve(val);
+        }
+      });
     };
 
     const onKey = (e) => {
@@ -2261,6 +2375,155 @@ async function loadActivity() {
   }
 }
 
+/* ========== GSAP: TAB ENTRY ANIMATION ========== */
+function animateTabEntry(tabId) {
+  const tab = document.getElementById(tabId);
+  if (!tab) return;
+
+  // Only animate the direct section-level children (not deep descendants)
+  const children = tab.querySelectorAll(':scope > *');
+  if (!children.length) return;
+
+  gsap.killTweensOf(children);
+  gsap.fromTo(children,
+    { opacity: 0, y: 10 },
+    {
+      opacity: 1,
+      y: 0,
+      duration: 0.4,
+      stagger: 0.05,
+      ease: 'power2.out',
+      clearProps: 'transform,opacity'
+    }
+  );
+}
+
+window.animateTabEntry = animateTabEntry;
+
+/* ========== GSAP SCROLLTRIGGER ANIMATIONS ========== */
+function initScrollAnimations() {
+  if (typeof ScrollTrigger === 'undefined' || typeof gsap === 'undefined') {
+    console.warn('ScrollTrigger not loaded — skipping scroll animations');
+    return;
+  }
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* ---------- 1. Sidebar brand letter reveal (on load) ---------- */
+  const brandLetters = document.querySelectorAll('.brand-title .letter');
+  if (brandLetters.length) {
+    gsap.fromTo(brandLetters,
+      { y: 12, opacity: 0, rotateX: -40 },
+      {
+        y: 0, opacity: 1, rotateX: 0,
+        duration: 0.55,
+        stagger: 0.05,
+        ease: 'back.out(1.7)',
+        delay: 0.15
+      }
+    );
+  }
+
+  /* ---------- 2. Dashboard panel scroll reveals ---------- */
+  // Every panel fades + slides in as it enters the viewport
+  ScrollTrigger.batch('.panel, .chart-panel, .stat-card, .insights-grid > *', {
+    start: 'top 88%',
+    once: true,
+    onEnter: (batch) => {
+      gsap.fromTo(batch,
+        { opacity: 0, y: 24 },
+        {
+          opacity: 1, y: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: 'power3.out',
+          overwrite: 'auto',
+          clearProps: 'transform'
+        }
+      );
+    }
+  });
+
+  /* ---------- 3. Post cards in grid ---------- */
+  ScrollTrigger.batch('#posts-list .post-card', {
+    start: 'top 90%',
+    once: true,
+    onEnter: (batch) => {
+      gsap.fromTo(batch,
+        { opacity: 0, y: 30, scale: 0.97 },
+        {
+          opacity: 1, y: 0, scale: 1,
+          duration: 0.5,
+          stagger: 0.06,
+          ease: 'back.out(1.4)',
+          clearProps: 'transform'
+        }
+      );
+    }
+  });
+
+  /* ---------- 4. Table rows cascade ---------- */
+  ScrollTrigger.batch('tbody tr', {
+    start: 'top 92%',
+    once: true,
+    onEnter: (batch) => {
+      gsap.fromTo(batch,
+        { opacity: 0, x: -12 },
+        {
+          opacity: 1, x: 0,
+          duration: 0.4,
+          stagger: 0.03,
+          ease: 'power2.out',
+          clearProps: 'transform'
+        }
+      );
+    }
+  });
+
+  /* ---------- 5. Calendar day cells ---------- */
+  ScrollTrigger.batch('.cal-day', {
+    start: 'top 95%',
+    once: true,
+    onEnter: (batch) => {
+      gsap.fromTo(batch,
+        { opacity: 0, scale: 0.92 },
+        {
+          opacity: 1, scale: 1,
+          duration: 0.35,
+          stagger: 0.015,
+          ease: 'power2.out',
+          clearProps: 'transform'
+        }
+      );
+    }
+  });
+
+  /* ---------- 6. Parallax on the login hero (if present) ---------- */
+  const heroNebula = document.querySelector('.galaxy-nebula');
+  if (heroNebula) {
+    gsap.to(heroNebula, {
+      yPercent: 15,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: '.login-hero',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: 0.6
+      }
+    });
+  }
+}
+
+/* Re-run batch animations whenever new content renders */
+function refreshScrollTriggers() {
+  if (typeof ScrollTrigger !== 'undefined') {
+    setTimeout(() => ScrollTrigger.refresh(), 100);
+  }
+}
+
+window.initScrollAnimations = initScrollAnimations;
+window.refreshScrollTriggers = refreshScrollTriggers;
+
 /* ---------- Router ---------- */
 function loadTab(tab) {
   safe(async () => {
@@ -2273,6 +2536,7 @@ function loadTab(tab) {
     if (tab === 'analytics') await loadAnalytics();
     if (tab === 'approvals') await loadApprovals();
     if (tab === 'admin') await loadAdminTables();
+    animateTabEntry(tab);
   });
 }
 
@@ -2301,3 +2565,8 @@ applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
 applyRolePermissions();
 safe(populateDropdowns);
 loadTab('dashboard');
+
+// Wait for DOM + charts to settle, then wire scroll animations
+window.addEventListener('load', () => {
+  setTimeout(initScrollAnimations, 200);
+});
